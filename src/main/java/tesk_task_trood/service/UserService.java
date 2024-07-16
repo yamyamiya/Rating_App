@@ -41,40 +41,32 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> apiFuture = firestore.collection("users")
-                .whereEqualTo("email", email).get();
-        List<QueryDocumentSnapshot> list = apiFuture.get().getDocuments();
 
-        return list.stream()
-                .map(x -> x.toObject(User.class))
-                .findFirst()
-                .orElse(null);
+       return firestore.collection("users").document(email).get().get().toObject(User.class);
     }
 
 
-    public double getUserRatings(String email) throws ExecutionException, InterruptedException {
-//        Collection<Object> ratings = Objects.requireNonNull(firestore.collection("ratings")
-//                .document(email).get().get().getData()).values();
+    public double getUserRating(String email) throws ExecutionException, InterruptedException {
 
         DocumentReference docRefRatings = Objects.requireNonNull(firestore.collection("ratings").document(email));
-        if(docRefRatings.get().get().getData()==null){
+        if (docRefRatings.get().get().getData() == null) {
             return 0;
         }
 
-        Collection<Object> ratings = docRefRatings.get().get().getData().values();
+        Collection<Object> ratings = Objects.requireNonNull(docRefRatings.get().get().getData()).values();
 
         return ratings.stream().mapToDouble(value -> Double.parseDouble(value.toString())).average().orElse(0);
     }
 
-    public void addScoreToTheUserByUsersEmail(String recipientEmail, String senderEmail, int score) throws ExecutionException, InterruptedException {
+    public void addScoreToTheUserByUserEmail(String recipientEmail, String senderEmail, int score) throws ExecutionException, InterruptedException {
         DocumentReference docRefRecipientUser = firestore.collection("users")
                 .document(recipientEmail);
-        if(docRefRecipientUser.get().get().getData()==null){
+        if (docRefRecipientUser.get().get().getData() == null) {
             throw new IllegalArgumentException("Not existing recipient user.");
         }
         DocumentReference docRefSenderUser = firestore.collection("users")
                 .document(senderEmail);
-        if(docRefSenderUser.get().get().getData()==null){
+        if (docRefSenderUser.get().get().getData() == null) {
             throw new IllegalArgumentException("Not existing sender user.");
         }
 
@@ -95,7 +87,18 @@ public class UserService {
             updatedUser.setAverageRating(existingRating.values().stream().mapToDouble(value -> Double.parseDouble(value.toString())).average().orElse(0));
             docRefRecipientUser.set(updatedUser);
         }
+        calculateTopUsers();
+
     }
+
+    public void calculateTopUsers() throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot> query = firestore.collection("users").orderBy("averageRating", Query.Direction.DESCENDING).limit(10).get().get().getDocuments();
+
+        Map<String, Object> result = query.stream().collect(Collectors.toMap(snapshot -> Objects.requireNonNull(snapshot.get("email")).toString(), snapshot -> Objects.requireNonNull(snapshot.get("averageRating"))));
+
+        firestore.collection("topratings").document("toplist").set(result);
+    }
+
 
     public UserUpdatedResponse updateUser(User user) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection("users").document(user.getEmail());
@@ -110,6 +113,4 @@ public class UserService {
 
         return new UserDeletedResponse(apiFuture.get().getUpdateTime().toDate(), true);
     }
-
-
 }

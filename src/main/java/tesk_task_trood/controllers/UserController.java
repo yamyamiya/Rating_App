@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @SneakyThrows
-    @GetMapping("/email") //email?email=olga@example
-    public User getUsersByEmail(@RequestParam String email){
+    @GetMapping("/email") //email?email=olga@example.com
+    public User getUserByEmail(@RequestParam String email){
         return userService.getUserByEmail(email);
     }
 
@@ -49,18 +49,25 @@ public class UserController {
 
     @SneakyThrows
     @GetMapping("/ratings/average")
-    public double averageRatingFor(@RequestParam String email) {
-        return userService.getUserRatings(email);
+    public double averageRatingForUserByUserEmail(@RequestParam String email) {
+        return userService.getUserRating(email);
     }
+
     @SneakyThrows
     @PostMapping("/ratings")
-    public ResponseEntity<Void> addScoreToTheUserByUsersEmail(@Valid @RequestBody AddScoreDTO addScoreDTO, BindingResult bindingResult){
+    public ResponseEntity<Void> addScoreToTheUserByUserEmail(@Valid @RequestBody AddScoreDTO addScoreDTO, BindingResult bindingResult){
        if(bindingResult.hasErrors()){
            return ResponseEntity.badRequest().build();
         }else{
-            userService.addScoreToTheUserByUsersEmail(addScoreDTO.getRecipientEmail(), addScoreDTO.getSenderEmail(), addScoreDTO.getScore());
+            userService.addScoreToTheUserByUserEmail(addScoreDTO.getRecipientEmail(), addScoreDTO.getSenderEmail(), addScoreDTO.getScore());
             return ResponseEntity.ok().build();
         }
+    }
+
+    @SneakyThrows
+    @PostMapping("/toprating")
+    public void getTopUsers() {
+        userService.calculateTopUsers();
     }
 
 }
