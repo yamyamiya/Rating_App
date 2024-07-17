@@ -98,19 +98,4 @@ public class UserService {
 
         firestore.collection("topratings").document("toplist").set(result);
     }
-
-
-    public UserUpdatedResponse updateUser(User user) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection("users").document(user.getEmail());
-        ApiFuture<WriteResult> apiFuture = docRef.set(user);
-
-        return new UserUpdatedResponse(user.getEmail(), apiFuture.get().getUpdateTime().toDate());
-    }
-
-    public UserDeletedResponse deleteUser(String email) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection("users").document(email);
-        ApiFuture<WriteResult> apiFuture = docRef.delete();
-
-        return new UserDeletedResponse(apiFuture.get().getUpdateTime().toDate(), true);
-    }
 }
