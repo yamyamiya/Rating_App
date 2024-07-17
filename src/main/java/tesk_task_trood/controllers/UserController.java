@@ -1,5 +1,7 @@
 package tesk_task_trood.controllers;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserRecord;
 import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +12,14 @@ import tesk_task_trood.dto.*;
 import tesk_task_trood.entity.User;
 import tesk_task_trood.service.UserService;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
     UserService userService;
+
 
     @SneakyThrows
     @PostMapping("/")
@@ -30,7 +35,9 @@ public class UserController {
 
     @SneakyThrows
     @GetMapping("/email") //email?email=olga@example.com
-    public User getUserByEmail(@RequestParam String email){
+    public User getUserByEmail(Principal principal){
+        UserRecord user = FirebaseAuth.getInstance().getUser(principal.getName());
+        String email = user.getEmail();
         return userService.getUserByEmail(email);
     }
 
