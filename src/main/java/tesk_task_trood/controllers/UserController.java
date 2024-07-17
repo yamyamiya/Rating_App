@@ -14,6 +14,7 @@ import tesk_task_trood.entity.User;
 import tesk_task_trood.service.UserService;
 
 import java.security.Principal;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/user")
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @SneakyThrows
-    @GetMapping("/email") //email?email=olga@example.com
+    @GetMapping("/email")
     public User getUserByEmail(Principal principal){
         String email = extractFBUser(principal).getEmail();
         return userService.getUserByEmail(email);
@@ -66,11 +67,12 @@ public class UserController {
         userService.calculateTopUsers();
     }
 
-    public UserRecord extractFBUser(Principal principal) throws FirebaseAuthException {
-        if(getUserByEmail(principal)==null){
+    public UserRecord extractFBUser(Principal principal) throws FirebaseAuthException, ExecutionException, InterruptedException {
+        UserRecord user = FirebaseAuth.getInstance().getUser(principal.getName());
+        if(userService.getUserByEmail(user.getEmail())==null){
             createUser(principal);
         }
-        return FirebaseAuth.getInstance().getUser(principal.getName());
+        return user;
     }
 
 }
