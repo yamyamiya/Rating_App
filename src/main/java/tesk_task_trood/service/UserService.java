@@ -5,9 +5,7 @@ import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tesk_task_trood.dto.UserCreatedResponse;
-import tesk_task_trood.dto.UserDeletedResponse;
 import tesk_task_trood.dto.UserListResponse;
-import tesk_task_trood.dto.UserUpdatedResponse;
 import tesk_task_trood.entity.User;
 
 import java.util.Collection;
