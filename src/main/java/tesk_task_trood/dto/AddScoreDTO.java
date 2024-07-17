@@ -14,7 +14,6 @@ import lombok.Setter;
 public class AddScoreDTO {
 
     private String recipientEmail;
-    private String senderEmail;
     @Min(1)
     @Max(5)
     private int score;

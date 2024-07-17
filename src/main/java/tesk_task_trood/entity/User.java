@@ -14,4 +14,9 @@ public class User {
     private String email;
     private String name;
     private Double averageRating=0.0;
+
+    public User(String email, String name) {
+        this.email = email;
+        this.name = name;
+    }
 }

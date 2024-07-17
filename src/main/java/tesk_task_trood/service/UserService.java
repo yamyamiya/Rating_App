@@ -5,9 +5,7 @@ import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tesk_task_trood.dto.UserCreatedResponse;
-import tesk_task_trood.dto.UserDeletedResponse;
 import tesk_task_trood.dto.UserListResponse;
-import tesk_task_trood.dto.UserUpdatedResponse;
 import tesk_task_trood.entity.User;
 
 import java.util.Collection;
@@ -97,20 +95,5 @@ public class UserService {
         Map<String, Object> result = query.stream().collect(Collectors.toMap(snapshot -> Objects.requireNonNull(snapshot.get("email")).toString(), snapshot -> Objects.requireNonNull(snapshot.get("averageRating"))));
 
         firestore.collection("topratings").document("toplist").set(result);
-    }
-
-
-    public UserUpdatedResponse updateUser(User user) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection("users").document(user.getEmail());
-        ApiFuture<WriteResult> apiFuture = docRef.set(user);
-
-        return new UserUpdatedResponse(user.getEmail(), apiFuture.get().getUpdateTime().toDate());
-    }
-
-    public UserDeletedResponse deleteUser(String email) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection("users").document(email);
-        ApiFuture<WriteResult> apiFuture = docRef.delete();
-
-        return new UserDeletedResponse(apiFuture.get().getUpdateTime().toDate(), true);
     }
 }

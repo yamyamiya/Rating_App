@@ -1,5 +1,8 @@
 package tesk_task_trood.controllers;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
 import jakarta.validation.Valid;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +13,21 @@ import tesk_task_trood.dto.*;
 import tesk_task_trood.entity.User;
 import tesk_task_trood.service.UserService;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
     UserService userService;
 
+
     @SneakyThrows
     @PostMapping("/")
-    public UserCreatedResponse createUser(@RequestBody User user){
-        return userService.createUser(user);
+    public UserCreatedResponse createUser(Principal principal){
+        UserRecord userRec = extractFBUser(principal);
+        User newUser = new User(userRec.getEmail(), userRec.getDisplayName());
+        return userService.createUser(newUser);
     }
 
     @SneakyThrows
@@ -30,36 +38,24 @@ public class UserController {
 
     @SneakyThrows
     @GetMapping("/email") //email?email=olga@example.com
-    public User getUserByEmail(@RequestParam String email){
+    public User getUserByEmail(Principal principal){
+        String email = extractFBUser(principal).getEmail();
         return userService.getUserByEmail(email);
-    }
-
-
-    @SneakyThrows
-    @PutMapping("/update")
-    public UserUpdatedResponse updateUser(@RequestBody User user){
-        return userService.updateUser(user);
-    }
-
-    @SneakyThrows
-    @DeleteMapping("/delete")
-    public UserDeletedResponse deleteUser(@RequestParam String email){
-        return userService.deleteUser(email);
     }
 
     @SneakyThrows
     @GetMapping("/ratings/average")
-    public double averageRatingForUserByUserEmail(@RequestParam String email) {
-        return userService.getUserRating(email);
+    public double averageRatingForUserByUserEmail(Principal principal) {
+        return userService.getUserRating(extractFBUser(principal).getEmail());
     }
 
     @SneakyThrows
     @PostMapping("/ratings")
-    public ResponseEntity<Void> addScoreToTheUserByUserEmail(@Valid @RequestBody AddScoreDTO addScoreDTO, BindingResult bindingResult){
+    public ResponseEntity<Void> addScoreToTheUserByUserEmail(@Valid @RequestBody AddScoreDTO addScoreDTO, BindingResult bindingResult, Principal principal){
        if(bindingResult.hasErrors()){
            return ResponseEntity.badRequest().build();
         }else{
-            userService.addScoreToTheUserByUserEmail(addScoreDTO.getRecipientEmail(), addScoreDTO.getSenderEmail(), addScoreDTO.getScore());
+            userService.addScoreToTheUserByUserEmail(addScoreDTO.getRecipientEmail(), extractFBUser(principal).getEmail(), addScoreDTO.getScore());
             return ResponseEntity.ok().build();
         }
     }
@@ -68,6 +64,13 @@ public class UserController {
     @PostMapping("/toprating")
     public void getTopUsers() {
         userService.calculateTopUsers();
+    }
+
+    public UserRecord extractFBUser(Principal principal) throws FirebaseAuthException {
+        if(getUserByEmail(principal)==null){
+            createUser(principal);
+        }
+        return FirebaseAuth.getInstance().getUser(principal.getName());
     }
 
 }
