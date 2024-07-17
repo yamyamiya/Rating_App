@@ -22,6 +22,9 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    FirebaseAuth firebaseAuth;
+
 
     @SneakyThrows
     @PostMapping("/")
@@ -68,7 +71,7 @@ public class UserController {
     }
 
     public UserRecord extractFBUser(Principal principal) throws FirebaseAuthException, ExecutionException, InterruptedException {
-        UserRecord firebaseUser = FirebaseAuth.getInstance().getUser(principal.getName());
+        UserRecord firebaseUser = firebaseAuth.getUser(principal.getName());
         if(userService.getUserByEmail(firebaseUser.getEmail())==null){
             User newUser = new User(firebaseUser.getEmail(), firebaseUser.getDisplayName());
             userService.createUser(newUser);
