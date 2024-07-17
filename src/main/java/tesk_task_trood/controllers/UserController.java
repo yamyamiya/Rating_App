@@ -68,11 +68,12 @@ public class UserController {
     }
 
     public UserRecord extractFBUser(Principal principal) throws FirebaseAuthException, ExecutionException, InterruptedException {
-        UserRecord user = FirebaseAuth.getInstance().getUser(principal.getName());
-        if(userService.getUserByEmail(user.getEmail())==null){
-            createUser(principal);
+        UserRecord firebaseUser = FirebaseAuth.getInstance().getUser(principal.getName());
+        if(userService.getUserByEmail(firebaseUser.getEmail())==null){
+            User newUser = new User(firebaseUser.getEmail(), firebaseUser.getDisplayName());
+            userService.createUser(newUser);
         }
-        return user;
+        return firebaseUser;
     }
 
 }
