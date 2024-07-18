@@ -65,7 +65,7 @@ public class UserController {
     }
 
     @SneakyThrows
-    @PostMapping("/toprating")
+    @GetMapping("/toprating")
     public void getTopUsers() {
         userService.calculateTopUsers();
     }

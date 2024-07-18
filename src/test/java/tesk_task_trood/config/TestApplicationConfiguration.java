@@ -16,7 +16,7 @@ import java.io.IOException;
 public class TestApplicationConfiguration {
 
     @Bean
-    public FirebaseApp connectFirebase(Environment environment) throws IOException {
+    public FirebaseApp connectFirebase(Environment environment) {
         FirestoreOptions firestoreOptions = FirestoreOptions.newBuilder().setEmulatorHost("localhost:8014").build();
 
         FirebaseOptions options = FirebaseOptions.builder()
@@ -32,4 +32,5 @@ public class TestApplicationConfiguration {
     public FirebaseAuth getFirebaseAuth(FirebaseApp firebaseApp) {
         return Mockito.mock(FirebaseAuth.class);
     }
+
 }
