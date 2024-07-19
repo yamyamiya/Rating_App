@@ -113,7 +113,7 @@ GET: `/user/` - return all existing users in "users" collection
 
 `/user/ratings/average` - return the current User rating
 
-`/user/ratings` - addition of score form 1-5 by current user to the recipient using recipient email 
+`/user/ratings` - addition of score from 1-5 by current user to the recipient using recipient email 
 
 `/user/toprating` - generating "topratings" collection with "toplist" document where 10 users with highest rating are provided
 
