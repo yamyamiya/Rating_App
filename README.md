@@ -56,7 +56,7 @@ Sources listed bellow were used:
 #### Database
 [https://firebase.google.com/docs/](https://firebase.google.com/docs/admin/setup?hl=ru#java)
 
-P.S. [this library](https://github.com/GoogleCloudPlatform/spring-cloud-gcp) is also can be used for the App, it provides possibility to use `Spring Data` instead direct access to Firestore (that enable replacing of Database without change of the logic). 
+P.S. [this library](https://github.com/GoogleCloudPlatform/spring-cloud-gcp) is also can be used for the App, it provides possibility to use `Spring Data` instead of direct access to the Firestore (what enables replacing of Database without change of the logic). 
 
 ### Testing
 
