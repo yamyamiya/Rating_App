@@ -67,8 +67,6 @@ public class UserControllerTest {
     public void shouldGiveAccessForAuthenticatedUsers() throws Exception {
         configureAuthentication();
         mockMvc.perform(get("/user/email")).andExpect(status().isOk());
-//        DocumentSnapshot firestoreUser = firestore.collection("users").document("user@email.com").get().get();
-//        assertEquals(0.0, firestoreUser.getData().get("averageRating"));
     }
 
     @Test
